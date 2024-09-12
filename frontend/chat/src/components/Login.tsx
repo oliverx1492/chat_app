@@ -1,6 +1,7 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "/logo.webp"
 import { SubmitHandler, useForm } from "react-hook-form"
+import { useEffect, useState } from "react";
 
 
 type FormFields = {
@@ -11,13 +12,67 @@ type FormFields = {
 
 const Login = () => {
 
+    const navigate = useNavigate()
+    const link: string = "http://localhost:3000"
+    const [message, setMessage] = useState()
+
     const { register, handleSubmit, formState: { errors } } = useForm<FormFields>()
+
+    // useeffect chekt beim laden der seite ob eine id vorhanden ist (dh ob ein user angemeldet ist)
+    // falls nicht wird zum login weitergeleitet
+    useEffect(() => {
+        const id = localStorage.getItem("id")
+        if (id) {
+            console.log("User ist bereits angemeldet, userID: ", id)
+            navigate("/")
+        }
+      
+    }, [])
+
 
 
     //Submit Login Form
-    const onSubmit: SubmitHandler<FormFields> = (data) => {
-        console.log(data)
-        // Ans Backend senden und was damit tun
+    const onSubmit: SubmitHandler<FormFields> = async (userData) => {
+        console.log(userData)
+        // Ans Backend senden und Cred. überprüfen
+
+        try {
+            const response = await fetch(`${link}/login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(userData)
+            })
+
+            // Konvertiere die Antwort des Backends in JSON
+            const data = await response.json();
+
+            if (response.ok) {
+                console.log(data.message)
+
+                // User ID um im localStirage zu speichern
+                console.log(data.id)
+                localStorage.setItem("id", data.id)
+                localStorage.setItem("username", data.username)
+
+                //Login erfolgreich, zum Home navigieren
+                navigate("/")
+
+            }
+            else {
+                console.log("Fehler aufgetreten: ", data.message)
+                setMessage(data.message)
+
+            }
+
+        }
+
+        catch (error) {
+            console.error(error)
+        }
+
+
     }
 
 
@@ -27,7 +82,7 @@ const Login = () => {
                 {/* INPUT FÜR LOGIN */}
                 <form onSubmit={handleSubmit(onSubmit)} className="md:w-1/2 w-screen md:h-auto h-screen text-center flex flex-col items-center justify-center ">
                     <p className="text-4xl p-4">Login</p>
-
+                    {message && <p>{message}</p>}
 
                     <input {...register("username", {
                         required: "Username darf nicht leer sein"

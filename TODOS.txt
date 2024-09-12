@@ -1,0 +1,25 @@
+5.September:
+
+Login erstellt
+SignUp erstellt
+Logik implementiert mit React Hook Form, Passwörter müssen matchen, dürfen nicht leer sein
+
+PLAN:
+
+Eine neue Tabelle erstellen mit folgenden Feldern:
+
+- chatID
+- senderID
+- senderUsername
+- empfängerID
+- empfängerUsername
+- timestamp
+- inhalt_der_nachricht
+
+Wenn ich dann einen CHat öffne werden alle Inhalte geladen die folgende Kriterien entsprechen:
+- senderID = ID vom angemeldeten Benutzer UND empfängerID = vom geöffneten Chat ODER
+- senderID = ID vom geöffneten Chat UND empfängerID = ID vom angemeldeten Benutzer
+
+alternative Idee:
+jeden Chat mit einer ID zu versehen (ChatID) und alle nachrichten die zwischen zwei Personen gesendet werden 
+bekommen die gleiche chatID
