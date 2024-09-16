@@ -236,8 +236,8 @@ const Home = () => {
                 <button onClick={logout} className="bg-customPink m-4 p-4 rounded-md shadow-md">Abmelden</button>
                 <ul className={view}>
                     {allUsers && allUsers.map((item, index) => (
-                        <div>
-                            <p onClick={() => openChat(item)} className="p-4 m-4 cursor-pointer rounded-md" key={index}>{item.username}</p>
+                        <div key={index}>
+                            <p onClick={() => openChat(item)} className="p-4 m-4 cursor-pointer rounded-md" >{item.username}</p>
                             <hr />
                         </div>
                     ))}

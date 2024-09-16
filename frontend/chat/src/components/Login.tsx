@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import logo from "/logo.webp"
 import { SubmitHandler, useForm } from "react-hook-form"
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 
 
 type FormFields = {
@@ -20,17 +20,19 @@ const Login = () => {
 
     // useeffect chekt beim laden der seite ob eine id vorhanden ist (dh ob ein user angemeldet ist)
     // falls nicht wird zum login weitergeleitet
-    useEffect(() => {
-        const id = localStorage.getItem("id")
-        if (id) {
-            console.log("User ist bereits angemeldet, userID: ", id)
-            navigate("/")
-        }
-        else {
-            console.log("Abgemeldet")
-        }
+
+    // useEffect(() => {
+    //     console.log("LOGIN PAGE LOADED")
+    //     const id = localStorage.getItem("id")
+    //     if (id) {
+    //         console.log("User ist bereits angemeldet, userID: ", id)
+    //         navigate("/")
+    //     }
+    //     else {
+    //         console.log("Abgemeldet")
+    //     }
       
-    }, [])
+    // }, [])
 
 
 
