@@ -15,14 +15,6 @@ let { PGHOST, PGUSER, PGPASSWORD, PGDATABASE, ENDPOINT_ID } = process.env;
 const app = express()
 
 
-// Statische Dateien aus React-Frontend bereitstellen
-app.use(express.static(path.join(__dirname, 'build')));
-
-// Alle nicht erkannten Routen auf index.html weiterleiten
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
-
 
 // socket IO
 const server = http.createServer(app)
