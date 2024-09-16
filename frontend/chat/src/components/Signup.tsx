@@ -13,7 +13,7 @@ type FormFields = {
 
 const Signup = () => {
 
-    const link:string = "http://localhost:3000"
+    const link:string = "https://chat-app-backend-q7zq.onrender.com"
     const navigate = useNavigate()
     const { register, watch, handleSubmit, formState: { errors } } = useForm<FormFields>()
     const [errorMes, setErrorMes] = useState("")

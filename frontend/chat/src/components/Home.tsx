@@ -8,8 +8,8 @@ import { io, Socket } from "socket.io-client"
 const Home = () => {
 
 
-    const link: string = "http://localhost:3000"
-    const socket: Socket = io("http://localhost:3000")
+    const link: string = "https://chat-app-backend-q7zq.onrender.com"
+    const socket: Socket = io("https://chat-app-backend-q7zq.onrender.com")
 
     //Für Typescript User interface
     interface User {

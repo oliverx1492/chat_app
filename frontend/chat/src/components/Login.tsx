@@ -13,7 +13,7 @@ type FormFields = {
 const Login = () => {
 
     const navigate = useNavigate()
-    const link: string = "http://localhost:3000"
+    const link: string = "https://chat-app-backend-q7zq.onrender.com"
     const [message, setMessage] = useState()
 
     const { register, handleSubmit, formState: { errors } } = useForm<FormFields>()
