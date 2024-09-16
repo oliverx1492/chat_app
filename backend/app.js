@@ -20,7 +20,7 @@ const app = express()
 const server = http.createServer(app)
 const io = new Server(server, {
     cors: {
-        origin: ['http://localhost:3000', 'https://chat-app-l6fb.onrender.com'], // Erlaubter Ursprung
+        origin: ['http://localhost:5173', 'https://chat-app-l6fb.onrender.com'], // Erlaubter Ursprung
         methods: ['GET', 'POST'], // Erlaubte Methoden
     },
 });
