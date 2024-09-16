@@ -92,6 +92,7 @@ const Home = () => {
     //funktion um den benutzer abzumelden
     const logout = () => {
         localStorage.removeItem("id")
+        localStorage.removeItem("username")
         window.location.reload()
     }
 
@@ -228,8 +229,8 @@ const Home = () => {
         <div className="flex flex-col md:flex-row h-screen">
 
             <div className="md:w-1/5 flex flex-col items-center md:border rounded-md m-4 p-4">
-                <svg onClick={changeView} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" 
-                className="size-6 block md:hidden">
+                <svg onClick={changeView} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"
+                    className="size-6 block md:hidden">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                 </svg>
                 <button onClick={logout} className="bg-customPink m-4 p-4 rounded-md shadow-md">Abmelden</button>
@@ -293,13 +294,35 @@ const Home = () => {
                     ))}
 
                     {chatHistory.map((item, index) => (
-                        <div key={index} className="flex flex-col justify-center items-end">
+                        <div key={index}>
+
+                            {chat?.id == item.receiverid 
+                            ?
+                            <div key={index} className="flex flex-col justify-center items-end">
+
+
 
                             <div className="p-4 mr-4 ml-4 mt-4 bg-customPink w-1/2 flex flex-col justify-center rounded-md max-w-100 break-words max-w-full" >
                                 <p className="">{item.message}</p>
 
                             </div>
                             <p className="text-xs pr-8">{item.time_stamp}</p>
+                        </div>
+
+                        :
+                        <div key={index} className="flex flex-col justify-center items-start">
+
+
+
+                        <div className="p-4 mr-4 ml-4 mt-4 bg-customPink w-1/2 flex flex-col justify-center rounded-md max-w-100 break-words max-w-full" >
+                            <p className="">{item.message}</p>
+
+                        </div>
+                        <p className="text-xs pr-8">{item.time_stamp}</p>
+                    </div>
+                        }
+                           
+
                         </div>
                     ))}
 

@@ -38,7 +38,7 @@ const pool = new Pool({
 app.use(bodyParser.json())
 app.use(cors())
 
-app.get("/", async (req, res) => {
+app.get("/",  (req, res) => {
     res.json({ message: "Updated" })
 })
 

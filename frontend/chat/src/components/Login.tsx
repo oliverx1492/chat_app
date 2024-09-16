@@ -26,6 +26,9 @@ const Login = () => {
             console.log("User ist bereits angemeldet, userID: ", id)
             navigate("/")
         }
+        else {
+            console.log("Abgemeldet")
+        }
       
     }, [])
 
