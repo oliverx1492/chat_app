@@ -125,7 +125,7 @@ const Home = () => {
         const date = new Date(ts)
         const timestampISO = date.toLocaleString()
         console.log("TIMEstamp :", timestampISO);
-        console.log(typeof(timestampISO))
+        console.log(typeof (timestampISO))
 
         const chatObject = {
             "senderid": parseInt(localStorage.getItem("id") || "0"),
@@ -158,13 +158,14 @@ const Home = () => {
 
         }
 
-     
+
 
     }
 
     //chat öffnen und in data sind die userinfos erhalten
     const openChat = async (data: any) => {
 
+        setView("hidden md:block")
         setChatHistory([])
         console.log(data)
         setChat(data)
@@ -206,6 +207,18 @@ const Home = () => {
     }, [chat])
 
 
+    //Ändert die ansicht wenn Mobile
+    const [view, setView] = useState("hidden md:block")
+
+    const changeView = () => {
+        if (view == "hidden md:block") {
+            setView("block md:block")
+        }
+        else {
+            setView("hidden md:block")
+        }
+    }
+
 
     return (
 
@@ -214,14 +227,17 @@ const Home = () => {
 
         <div className="flex flex-col md:flex-row h-screen">
 
-            <div className="w-1/5 flex flex-col items-center border rounded-md m-4 p-4">
-
-                <button onClick={logout} className="bg-customPink m-4 p-4 rounded-md shadow-md">Log out</button>
-                <ul>
+            <div className="md:w-1/5 flex flex-col items-center md:border rounded-md m-4 p-4">
+                <svg onClick={changeView} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" 
+                className="size-6 block md:hidden">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+                <button onClick={logout} className="bg-customPink m-4 p-4 rounded-md shadow-md">Abmelden</button>
+                <ul className={view}>
                     {allUsers && allUsers.map((item, index) => (
                         <div>
-                        <p onClick={() => openChat(item)} className="p-4 m-4 cursor-pointer rounded-md" key={index}>{item.username}</p>
-                        <hr />
+                            <p onClick={() => openChat(item)} className="p-4 m-4 cursor-pointer rounded-md" key={index}>{item.username}</p>
+                            <hr />
                         </div>
                     ))}
                 </ul>
@@ -231,7 +247,7 @@ const Home = () => {
                 {/* NACHRICHTEN */}
 
 
-                <div  className="md:h-5/6 md:w-auto w-screen md:m-4 md:p-4 overflow-y-scroll ">
+                <div className="md:h-5/6 md:w-auto w-screen md:m-4 md:p-4 overflow-y-scroll ">
                     {chat && <p className="text-3xl p-2 shadow-md flex justify-center items-center">{chat.username}</p>}
 
                     {allChat && allChat.map((item, index) => (
@@ -239,17 +255,20 @@ const Home = () => {
 
 
                         <div className="" key={index}>
+
                             {/* Wenn chat id ungleich receiver id ist, ist die nachricht von mir und somit rechts  */}
                             {chat?.id == item.receiverid
 
                                 ?
                                 <div className="flex flex-col items-end justify-center ">
-                                    <div  className=
+
+
+                                    <div className=
                                         "p-4 mt-4 mr-4 ml-4 bg-customPink w-1/2 flex flex-col justify-center rounded-md max-w-100 break-words max-w-full"
 
                                     >
                                         <p className="">{item.message}</p>
-                                        
+
                                     </div>
                                     <p className="text-xs pl-8 pr-8">{item.time_stamp}</p>
                                 </div>
@@ -257,13 +276,13 @@ const Home = () => {
                                 // Dieser Chat ist von meinem Chatpartner und somir links zu finde
                                 :
                                 <div key={index} className="flex flex-col justify-center items-start">
-                                    <div  className=
+                                    <div className=
                                         "p-4 mt-4 mr-4 ml-4 bg-customPink w-1/2 flex flex-col justify-center rounded-md max-w-100 break-words max-w-full"
 
                                     >
 
                                         <p className="">{item.message}</p>
-                                        
+
 
                                     </div>
                                     <p className="text-xs pl-8 pr-8">{item.time_stamp}</p>
@@ -274,7 +293,7 @@ const Home = () => {
                     ))}
 
                     {chatHistory.map((item, index) => (
-                        <div  key={index}  className="flex flex-col justify-center items-end">
+                        <div key={index} className="flex flex-col justify-center items-end">
 
                             <div className="p-4 mr-4 ml-4 mt-4 bg-customPink w-1/2 flex flex-col justify-center rounded-md max-w-100 break-words max-w-full" >
                                 <p className="">{item.message}</p>
