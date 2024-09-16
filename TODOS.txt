@@ -23,3 +23,10 @@ Wenn ich dann einen CHat öffne werden alle Inhalte geladen die folgende Kriteri
 alternative Idee:
 jeden Chat mit einer ID zu versehen (ChatID) und alle nachrichten die zwischen zwei Personen gesendet werden 
 bekommen die gleiche chatID
+
+DONE!!
+
+
+TO DO:
+die nachrichten die von socket io kommen im backend speichern und dann beim aufurfen
+des chats (openchat) die richtigen nachrichten wiedergeben

@@ -1,12 +1,18 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { SubmitHandler, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
+import { io, Socket } from "socket.io-client"
+
 
 
 const Home = () => {
 
+
+    const link: string = "http://localhost:3000"
+    const socket: Socket = io("http://localhost:3000")
+
     //Für Typescript User interface
-    interface User  {
+    interface User {
         username: string;
         password: string;
     }
@@ -16,6 +22,16 @@ const Home = () => {
         username: string;
     }
 
+    // Nachrichtentyp
+    interface ChatMessage {
+        message: string;
+        senderid: number;
+        senderusername: string;
+        receiverid: number;
+        receiverusername: string;
+        time_stamp: string;
+    }
+
     type FormFields = {
         id: number,
         message: string
@@ -23,12 +39,19 @@ const Home = () => {
 
 
     const navigate = useNavigate()
-    const link:string = "http://localhost:3000"
+
 
     const [allUsers, setAllUsers] = useState<User[]>([])
     const [chat, setChat] = useState<Chat>()
 
     const { register, handleSubmit } = useForm<FormFields>()
+
+    //const [message, setMessage] = useState<string>('');
+    const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+    const [allChat, setAllChat] = useState<ChatMessage[]>([])
+    const chatEndRef = useRef<HTMLDivElement | null>(null);  // Referenz für das Ende des Chat-Verlaufs
+
+
 
     // useeffect chekt beim laden der seite ob eine id vorhanden ist (dh ob ein user angemeldet ist)
     // falls nicht wird zum login weitergeleitet
@@ -47,7 +70,24 @@ const Home = () => {
             navigate("/login")
         }
 
+        //Nachrichten vom Backend hören
+        socket.on("chat message", (msg) => {
+            setChatHistory((prevHistory) => [...prevHistory, msg])
+        })
+
+        // Cleanup: Event-Listener entfernen, wenn die Komponente unmounted wird
+        return () => {
+            socket.off('chat message');
+        };
+
+
+
     }, [])
+
+    //  // Scrollt automatisch ans Ende des Chat-Verlaufs, wenn sich chatHistory ändert
+    useEffect(() => {
+        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [chatHistory]);
 
     //funktion um den benutzer abzumelden
     const logout = () => {
@@ -60,13 +100,13 @@ const Home = () => {
         try {
             const response = await fetch(`${link}/allUsers`)
             const data = await response.json()
-            
-            const filteredUserData = data.data.filter((user: any) => user.id != parseInt(localStorage.getItem("id") || "0"))
-          
-            setAllUsers(filteredUserData)
-        }   
 
-        catch(error) {
+            const filteredUserData = data.data.filter((user: any) => user.id != parseInt(localStorage.getItem("id") || "0"))
+
+            setAllUsers(filteredUserData)
+        }
+
+        catch (error) {
             console.error(error)
         }
     }
@@ -78,10 +118,14 @@ const Home = () => {
         console.log("Nachricht: ", data.message)
         console.log("Sender ID: ", parseInt(localStorage.getItem("id") || "0"))
         console.log("Sender Username: ", localStorage.getItem("username"))
-        console.log("Receiver ID: ", chat?.id )
+        console.log("Receiver ID: ", chat?.id)
         console.log("Receiver Username: ", chat?.username)
-        const timestampISO = new Date().toISOString();
-        console.log("TIMEstamp :", timestampISO); 
+
+        const ts = Date.now()
+        const date = new Date(ts)
+        const timestampISO = date.toLocaleString()
+        console.log("TIMEstamp :", timestampISO);
+        console.log(typeof(timestampISO))
 
         const chatObject = {
             "senderid": parseInt(localStorage.getItem("id") || "0"),
@@ -94,53 +138,72 @@ const Home = () => {
 
         console.log(chatObject)
 
-         // Eine neue ChatID wird erstellt falls kein Chat zwischen den beiden Nuztern angezeigt wird
-        // id wird zurückgegeben
-
-        try {
-            const response = await fetch(`${link}/newChat`, {
-                method: "POST",
-                headers: {
-                    "Content-Type":"application/json"
-                },
-                body: JSON.stringify(chatObject)
-            })
-
-            const data = await response.json();
-
-            if (response.ok) {
-                
-                console.log( data.message)
+        //mit socket io gesendet
+        console.log("Socket io gesendet")
 
 
+        if (data.message) {
+
+
+            const msg: ChatMessage = {
+                message: data.message,
+                senderid: parseInt(localStorage.getItem("id") || "0"),
+                senderusername: localStorage.getItem("username") || "unbekannter user",
+                receiverid: chat?.id || 0,
+                receiverusername: chat?.username || "unbekannter user",
+                time_stamp: timestampISO
             }
-            else {
-                console.log("Fehler aufgetreten: ", data.message)
-                
 
-            }
+            socket.emit("chat message", msg)
+
         }
 
-        catch(error) {
-            console.error(error)
-        }
+     
 
     }
 
     //chat öffnen und in data sind die userinfos erhalten
     const openChat = async (data: any) => {
 
-       
+        setChatHistory([])
         console.log(data)
         setChat(data)
-
+        const recID = data.id
+        const userID = parseInt(localStorage.getItem("id") || "0")
         //Hier wird dann eine Funktion kommen die die Nachrichten aus dem Backend fultern kann damit nur
         //die jenigen angezeig werden die mit dem User interagiert haben
+        console.log(recID, userID)
+
+        try {
+            const response = await fetch(`${link}/openChat`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ recID, userID })
+            })
+
+            const data = await response.json()
+            if (response.ok) {
+                console.log("DMD: ", data.message)
+                setAllChat(data.message)
+            }
+
+            else {
+                console.log("Fehler aufgetreten: ", data)
+            }
+        }
+
+        catch (error) {
+            console.log(error)
+        }
+
+
     }
 
-    useEffect( ()=> {
+    useEffect(() => {
         console.log("CHAT: ", chat)
-    },[chat] )
+    }, [chat])
 
 
 
@@ -149,22 +212,81 @@ const Home = () => {
 
 
 
-        <div className="flex h-screen">
+        <div className="flex flex-col md:flex-row h-screen">
 
-            <div className="w-1/5 flex flex-col items-center">
-                
-                <button onClick={logout} className="bg-customPink m-4 p-4 rounded-md">Log out</button>
-                    <ul>
-                        {allUsers && allUsers.map( (item, index) => (
-                            <p onClick={()=>openChat(item)} className="pp-4 m-4 cursor-pointer" key={index}>{item.username}</p>
-                        ) )}
-                    </ul>
+            <div className="w-1/5 flex flex-col items-center border rounded-md m-4 p-4">
+
+                <button onClick={logout} className="bg-customPink m-4 p-4 rounded-md shadow-md">Log out</button>
+                <ul>
+                    {allUsers && allUsers.map((item, index) => (
+                        <div>
+                        <p onClick={() => openChat(item)} className="p-4 m-4 cursor-pointer rounded-md" key={index}>{item.username}</p>
+                        <hr />
+                        </div>
+                    ))}
+                </ul>
             </div >
+
             <div className="w-4/5 ">
                 {/* NACHRICHTEN */}
-             
-                <div className="h-5/6 border m-4 p-4 overflow-y-scroll">
-                        {chat && <p>Alle Nachrichten an {chat.username} mit der userID {chat.id}</p>}
+
+
+                <div  className="md:h-5/6 md:w-auto w-screen md:m-4 md:p-4 overflow-y-scroll ">
+                    {chat && <p className="text-3xl p-2 shadow-md flex justify-center items-center">{chat.username}</p>}
+
+                    {allChat && allChat.map((item, index) => (
+
+
+
+                        <div className="" key={index}>
+                            {/* Wenn chat id ungleich receiver id ist, ist die nachricht von mir und somit rechts  */}
+                            {chat?.id == item.receiverid
+
+                                ?
+                                <div className="flex flex-col items-end justify-center ">
+                                    <div  className=
+                                        "p-4 mt-4 mr-4 ml-4 bg-customPink w-1/2 flex flex-col justify-center rounded-md max-w-100 break-words max-w-full"
+
+                                    >
+                                        <p className="">{item.message}</p>
+                                        
+                                    </div>
+                                    <p className="text-xs pl-8 pr-8">{item.time_stamp}</p>
+                                </div>
+
+                                // Dieser Chat ist von meinem Chatpartner und somir links zu finde
+                                :
+                                <div key={index} className="flex flex-col justify-center items-start">
+                                    <div  className=
+                                        "p-4 mt-4 mr-4 ml-4 bg-customPink w-1/2 flex flex-col justify-center rounded-md max-w-100 break-words max-w-full"
+
+                                    >
+
+                                        <p className="">{item.message}</p>
+                                        
+
+                                    </div>
+                                    <p className="text-xs pl-8 pr-8">{item.time_stamp}</p>
+                                </div>}
+
+
+                        </div>
+                    ))}
+
+                    {chatHistory.map((item, index) => (
+                        <div  key={index}  className="flex flex-col justify-center items-end">
+
+                            <div className="p-4 mr-4 ml-4 mt-4 bg-customPink w-1/2 flex flex-col justify-center rounded-md max-w-100 break-words max-w-full" >
+                                <p className="">{item.message}</p>
+
+                            </div>
+                            <p className="text-xs pr-8">{item.time_stamp}</p>
+                        </div>
+                    ))}
+
+                    <div ref={chatEndRef}>
+
+                    </div>
                 </div>
                 {/* INPUT */}
                 {chat && <form onSubmit={handleSubmit(onSubmit)} className="flex flex-row w-full justify-center items-center">

@@ -1,14 +1,27 @@
 // app.js
 const postgres = require('postgres');
+const http = require("http")
 const express = require('express');
 const { Pool } = require('pg');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const {Server} = require("socket.io")
 require('dotenv').config();
+
+
 
 let { PGHOST, PGUSER, PGPASSWORD, PGDATABASE, ENDPOINT_ID } = process.env;
 
 const app = express()
+
+// socket IO
+const server = http.createServer(app)
+const io = new Server(server, {
+    cors: {
+        origin: 'http://localhost:5173', // Erlaubter Ursprung
+        methods: ['GET', 'POST'], // Erlaubte Methoden
+    },
+});
 
 const pool = new Pool({
     host: PGHOST,
@@ -23,9 +36,7 @@ const pool = new Pool({
 
 
 app.use(bodyParser.json())
-app.use(cors({
-    origin: "http://localhost:5173"
-}))
+app.use(cors())
 
 app.get("/", async (req, res) => {
     res.json({ message: "Updated" })
@@ -114,6 +125,7 @@ app.get("/allUsers", async (req, res) => {
     }
 })
 
+// Hier ist die FUnktion die den Chat ohne Socket IO im Backend speichert
 app.post("/newChat", async (req, res) => {
     
     const {senderid, senderusername, receiverid, receiverusername, time_stamp, message} = req.body
@@ -160,8 +172,68 @@ app.post("/newChat", async (req, res) => {
 })
 
 
+// Hier ist funktionalität mit socket io
+io.on("connection", (socket) => {
+    console.log("User connected: ", socket.id)
+
+    // Listening vom Frontend nach neuen Chats
+
+    socket.on("chat message", async (msg) => {
+        console.log("Nachricht erhalten: ", msg)
+
+        //TODO speichern im SQL
+        try {
+            io.emit("chat message", msg)
+
+            const query = `INSERT INTO chat  
+            (senderid, senderusername, receiverid, receiverusername, time_stamp, message)
+            VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`
+            const values = [msg.senderid, msg.senderusername, msg.receiverid, msg.receiverusername, msg.time_stamp, msg.message]
+    
+            const result = await pool.query(query, values)
+            console.log(result.rows[0])
+    
+            
+    
+        }
+    
+        catch(error) {
+            console.log(error)
+            
+        }
+
+    
+
+    })
+
+    socket.on("disconnect", ()=> {
+        console.log("User disconnected")
+    })
+
+})
+
+app.post("/openChat", async (req, res) => {
+    console.log(req.body)
+    const {recID, userID} = req.body
+
+    try {
+        
+        const query = `SELECT * FROM chat WHERE 
+        (senderid = $1 AND receiverid = $2) OR (senderid = $2 AND receiverid =$1)`
+        const result = await pool.query(query, [recID, userID] )
+
+        return res.status(200).json({message: result.rows})
+    }
+
+    catch(err) {
+        console.log("Fehler aufgetreten: ", err)
+        return res.status(500).json({message: error})
+    }
+})
+
+
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`Server läuft auf Port ${port}`);
 });
