@@ -121,14 +121,7 @@ const Home = () => {
         const timestampISO = date.toLocaleString()
       
 
-        const chatObject = {
-            "senderid": parseInt(localStorage.getItem("id") || "0"),
-            "senderusername": localStorage.getItem("username"),
-            "receiverid": chat?.id,
-            "receiverusername": chat?.username,
-            "time_stamp": timestampISO,
-            "message": data.message
-        }
+        
 
       
 
