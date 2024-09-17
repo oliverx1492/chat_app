@@ -22,7 +22,7 @@ const Signup = () => {
 
     //Submit Login Form
     const onSubmit: SubmitHandler<FormFields> = async (userData) => {
-        console.log(userData)
+        
         // Ans Backend senden und was damit tun
         try {
             const response = await fetch(`${link}/signup`, {

@@ -23,7 +23,7 @@ const Login = () => {
 
     //Submit Login Form
     const onSubmit: SubmitHandler<FormFields> = async (userData) => {
-        console.log(userData)
+        
         // Ans Backend senden und Cred. überprüfen
 
         try {
@@ -42,7 +42,7 @@ const Login = () => {
                 console.log(data.message)
 
                 // User ID um im localStirage zu speichern
-                console.log(data.id)
+             
                 localStorage.setItem("id", data.id)
                 localStorage.setItem("username", data.username)
 

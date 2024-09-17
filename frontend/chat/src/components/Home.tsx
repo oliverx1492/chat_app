@@ -44,7 +44,7 @@ const Home = () => {
     const [allUsers, setAllUsers] = useState<User[]>([])
     const [chat, setChat] = useState<Chat>()
 
-    const { register, handleSubmit } = useForm<FormFields>()
+    const { register, reset, handleSubmit } = useForm<FormFields>()
 
     //const [message, setMessage] = useState<string>('');
     const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
@@ -60,7 +60,7 @@ const Home = () => {
         const id = localStorage.getItem("id")
 
         if (id) {
-            console.log("User ist bereits angemeldet, userID: ", id)
+            
 
             //UserData werden geladen
             getUserData()
@@ -115,18 +115,11 @@ const Home = () => {
     //Nachricht senden
     const onSubmit = async (data: any) => {
 
-        console.log(data)
-        console.log("Nachricht: ", data.message)
-        console.log("Sender ID: ", parseInt(localStorage.getItem("id") || "0"))
-        console.log("Sender Username: ", localStorage.getItem("username"))
-        console.log("Receiver ID: ", chat?.id)
-        console.log("Receiver Username: ", chat?.username)
 
         const ts = Date.now()
         const date = new Date(ts)
         const timestampISO = date.toLocaleString()
-        console.log("TIMEstamp :", timestampISO);
-        console.log(typeof (timestampISO))
+      
 
         const chatObject = {
             "senderid": parseInt(localStorage.getItem("id") || "0"),
@@ -137,10 +130,10 @@ const Home = () => {
             "message": data.message
         }
 
-        console.log(chatObject)
+      
 
         //mit socket io gesendet
-        console.log("Socket io gesendet")
+    
 
 
         if (data.message) {
@@ -158,7 +151,7 @@ const Home = () => {
             socket.emit("chat message", msg)
 
         }
-
+        reset()
 
 
     }
@@ -168,13 +161,13 @@ const Home = () => {
 
         setView("hidden md:block")
         setChatHistory([])
-        console.log(data)
+        
         setChat(data)
         const recID = data.id
         const userID = parseInt(localStorage.getItem("id") || "0")
         //Hier wird dann eine Funktion kommen die die Nachrichten aus dem Backend fultern kann damit nur
         //die jenigen angezeig werden die mit dem User interagiert haben
-        console.log(recID, userID)
+        
 
         try {
             const response = await fetch(`${link}/openChat`, {
@@ -187,7 +180,7 @@ const Home = () => {
 
             const data = await response.json()
             if (response.ok) {
-                console.log("DMD: ", data.message)
+                console.log("DM: ", data.message)
                 setAllChat(data.message)
             }
 
@@ -203,9 +196,7 @@ const Home = () => {
 
     }
 
-    useEffect(() => {
-        console.log("CHAT: ", chat)
-    }, [chat])
+ 
 
 
     //Ändert die ansicht wenn Mobile
@@ -298,7 +289,16 @@ const Home = () => {
                     {chatHistory.map((item, index) => (
                         <div key={index}>
 
-                           {item.receiverid == chat?.id   && <div>
+                           {
+                           ((item.receiverid == chat?.id 
+                           && item.senderid == parseInt(localStorage.getItem("id") || "0")
+                           
+                        ) || (
+                            (item.senderid == chat?.id 
+                                && item.receiverid == parseInt(localStorage.getItem("id") || "0")
+                                
+                             )
+                        ))  && <div>
 
                             {chat?.id == item.receiverid 
                             ?
