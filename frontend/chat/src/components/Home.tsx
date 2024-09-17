@@ -298,7 +298,7 @@ const Home = () => {
                     {chatHistory.map((item, index) => (
                         <div key={index}>
 
-                           {(item.receiverid == chat?.id || item.senderid == chat?.id)  && <div>
+                           {item.receiverid == chat?.id   && <div>
 
                             {chat?.id == item.receiverid 
                             ?
