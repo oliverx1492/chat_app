@@ -293,8 +293,12 @@ const Home = () => {
                         </div>
                     ))}
 
+                    {/* Live Chat in History */}
+                    
                     {chatHistory.map((item, index) => (
                         <div key={index}>
+
+                           {(item.receiverid == chat?.id || item.senderid == chat?.id)  && <div>
 
                             {chat?.id == item.receiverid 
                             ?
@@ -322,7 +326,7 @@ const Home = () => {
                     </div>
                         }
                            
-
+                           </div>}
                         </div>
                     ))}
 

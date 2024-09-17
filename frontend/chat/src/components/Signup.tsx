@@ -18,17 +18,6 @@ const Signup = () => {
     const { register, watch, handleSubmit, formState: { errors } } = useForm<FormFields>()
     const [errorMes, setErrorMes] = useState("")
 
-    // useeffect chekt beim laden der seite ob eine id vorhanden ist (dh ob ein user angemeldet ist)
-    // falls nicht wird zum login weitergeleitet
-    // useEffect(() => {
-    //     const id = localStorage.getItem("id")
-    //     if (id) {
-    //         console.log("User ist bereits angemeldet, userID: ", id)
-    //         navigate("/")
-    //     }
-        
-    // }, [])
-
     
 
     //Submit Login Form

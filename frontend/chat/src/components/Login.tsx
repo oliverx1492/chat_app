@@ -18,22 +18,7 @@ const Login = () => {
 
     const { register, handleSubmit, formState: { errors } } = useForm<FormFields>()
 
-    // useeffect chekt beim laden der seite ob eine id vorhanden ist (dh ob ein user angemeldet ist)
-    // falls nicht wird zum login weitergeleitet
-
-    // useEffect(() => {
-    //     console.log("LOGIN PAGE LOADED")
-    //     const id = localStorage.getItem("id")
-    //     if (id) {
-    //         console.log("User ist bereits angemeldet, userID: ", id)
-    //         navigate("/")
-    //     }
-    //     else {
-    //         console.log("Abgemeldet")
-    //     }
-      
-    // }, [])
-
+  
 
 
     //Submit Login Form
