@@ -22,8 +22,11 @@ This project is a real-time chat application that allows users to communicate in
 ### Prerequisites
 - A web browser to access the chat application.
 
+## Important Notes
+- The app uses a **free server** to store and manage data. As a result, it may take **1-2 minutes** for the server to start and communicate.
+
 ### Steps
-1. Open the application in your browser (hosted link or local setup).
+1. Open the application in your browser
 2. **Create an Account**:
    - Click on the "Sign Up" button.
    - Enter your desired username and password.
