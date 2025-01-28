@@ -35,7 +35,7 @@ This project is a real-time chat application that allows users to communicate in
 ---
 
 ## Used Technologies
-- **Backend**: NodeJS, ExpressJS, SocketIO
-- **Frontend**: 
-- **Real-Time Communication**: Powered by WebSockets for instant message delivery.
+- **Backend**: javaScript, NodeJS, ExpressJS, SocketIO
+- **Frontend**: JavaScript, React
+
 
