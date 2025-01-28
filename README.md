@@ -35,10 +35,10 @@ This project is a real-time chat application that allows users to communicate in
 4. **Start Chatting**:
    - Once logged in, you can join a chat and send messages in real time.
 There are two demo user with following credentials:
-Username: user1
-Password: 111111
-Username: user2
-Password: 222222
+- Username: user1
+- Password: 111111
+- Username: user2
+- Password: 222222
 
 ---
 
