@@ -43,7 +43,7 @@ There are two demo user with following credentials:
 ---
 
 ## Used Technologies
-- **Backend**: javaScript, NodeJS, ExpressJS, SocketIO
+- **Backend**: javaScript, NodeJS, ExpressJS, SocketIO, PostegreSQL
 - **Frontend**: JavaScript, React
 
 Link: https://chat-app-l6fb.onrender.com/login
